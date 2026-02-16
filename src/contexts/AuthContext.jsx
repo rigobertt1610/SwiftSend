@@ -24,13 +24,21 @@ export function AuthProvider({ children }) {
     return result.user
   }
 
+  const ensureAccessToken = async () => {
+    if (accessToken) return accessToken
+    const result = await signInWithPopup(auth, googleProvider)
+    const credential = GoogleAuthProvider.credentialFromResult(result)
+    setAccessToken(credential.accessToken)
+    return credential.accessToken
+  }
+
   const logout = async () => {
     await signOut(auth)
     setUser(null)
     setAccessToken(null)
   }
 
-  const value = { user, accessToken, loading, loginWithGoogle, logout }
+  const value = { user, accessToken, loading, loginWithGoogle, ensureAccessToken, logout }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

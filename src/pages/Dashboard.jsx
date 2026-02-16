@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function Dashboard() {
-  const { user, accessToken, logout } = useAuth()
+  const { user, ensureAccessToken, logout } = useAuth()
   const {
     query: email,
     setQuery: setEmail,
@@ -62,8 +62,9 @@ export default function Dashboard() {
 
     setSending(true)
     try {
+      const token = await ensureAccessToken()
       await sendEmailWithAttachment({
-        accessToken,
+        accessToken: token,
         to: email,
         from: user.email,
         subject: `Archivo: ${file.name}`,
@@ -101,7 +102,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-surface border-b border-border">
+      <header className="bg-surface border-b border-border sticky top-0 z-50">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
